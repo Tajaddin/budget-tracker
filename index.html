@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budget Tracker — Tajaddin Gafarov</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2300d4aa'/%3E%3Ctext x='32' y='41' font-size='32' text-anchor='middle' fill='%230b0e14' font-family='Arial, sans-serif'%3EB%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+<div class="app-layout">
+  <!-- ───── Sidebar ───── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="logo-icon">B</div>
+        <div class="logo-text">BudgetApp</div>
+      </div>
+      <div class="sidebar-user">Tajaddin Gafarov<br/>M.S. CS — USF</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Overview</div>
+      <div class="nav-item active" data-page="dashboard">
+        <i data-lucide="layout-dashboard"></i> Dashboard
+      </div>
+      <div class="nav-item" data-page="income">
+        <i data-lucide="wallet"></i> Income
+      </div>
+      <div class="nav-item" data-page="expenses">
+        <i data-lucide="receipt"></i> Expenses
+      </div>
+      <div class="nav-item" data-page="transactions">
+        <i data-lucide="list"></i> Transactions
+      </div>
+      <div class="nav-item" data-page="export">
+        <i data-lucide="download"></i> Data Export
+      </div>
+
+      <div class="nav-section-title">Accounts</div>
+      <div class="nav-item" data-page="cards">
+        <i data-lucide="credit-card"></i> Credit Cards
+      </div>
+      <div class="nav-item" data-page="subscriptions">
+        <i data-lucide="repeat"></i> Subscriptions
+      </div>
+      <div class="nav-item" data-page="zelle">
+        <i data-lucide="send"></i> Zelle Transfers
+      </div>
+
+      <div class="nav-section-title">Planning</div>
+      <div class="nav-item" data-page="mealplan">
+        <i data-lucide="utensils-crossed"></i> Meal Plan
+      </div>
+      <div class="nav-item" data-page="comparison">
+        <i data-lucide="bar-chart-3"></i> Comparison
+      </div>
+      <div class="nav-item" data-page="tiers">
+        <i data-lucide="layers"></i> Lifestyle Tiers
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ───── Main ───── -->
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+          <i data-lucide="menu" style="width:22px;height:22px"></i>
+        </button>
+        <div>
+          <div class="header-title" id="pageTitle">Dashboard</div>
+          <div class="header-subtitle">Personal Finance Overview</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="header-month">
+          <i data-lucide="calendar"></i>
+          March 2026
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal()">
+          <i data-lucide="plus"></i> Add Expense
+        </button>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- ═══════ DASHBOARD ═══════ -->
+      <section class="page-section active" id="page-dashboard">
+        <!-- Summary Cards -->
+        <div class="summary-grid" id="summaryCards"></div>
+
+        <!-- Daily Budget Widget -->
+        <div class="daily-widget" id="dailyWidget"></div>
+
+        <!-- Savings Banner -->
+        <div class="savings-banner">
+          <div class="savings-icon"><i data-lucide="trending-down"></i></div>
+          <div class="savings-text">
+            <h3>$902/month eliminated in subscriptions &amp; spending</h3>
+            <p>T-Mobile, Hinge, Triaga, Duet RM, Mega, Amazon ban, no auto parts</p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- Variable Budget Progress -->
+          <div class="card">
+            <div class="card-title"><i data-lucide="target"></i> Variable Budget</div>
+            <div id="variableBudget"></div>
+          </div>
+
+          <!-- Spending by Category (Feb) — Donut -->
+          <div class="card">
+            <div class="card-title"><i data-lucide="pie-chart"></i> Feb Spending Breakdown</div>
+            <div class="chart-container"><canvas id="chartSpending"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Fixed Costs -->
+        <div class="card">
+          <div class="card-title"><i data-lucide="lock"></i> Fixed Costs — March</div>
+          <div id="fixedCosts"></div>
+        </div>
+      </section>
+
+      <!-- ═══════ INCOME ═══════ -->
+      <section class="page-section" id="page-income">
+        <div class="summary-grid" id="incomeSummary"></div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-header" style="margin-bottom:12px">
+              <div class="card-title" style="margin:0"><i data-lucide="wallet"></i> March Income Sources</div>
+              <button class="btn btn-primary btn-sm" onclick="addIncome()">
+                <i data-lucide="plus"></i> Add Income
+              </button>
+            </div>
+            <div id="marchIncome"></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i data-lucide="wallet"></i> February Income Sources</div>
+            <div id="febIncome"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i data-lucide="bar-chart-3"></i> Income Sources</div>
+          <div class="chart-container"><canvas id="chartIncome"></canvas></div>
+        </div>
+      </section>
+
+      <!-- ═══════ EXPENSES ═══════ -->
+      <section class="page-section" id="page-expenses">
+        <div class="summary-grid" id="expenseSummary"></div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><i data-lucide="target"></i> March Variable Budget</div>
+            <div id="expenseVariable"></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i data-lucide="lock"></i> March Fixed Costs</div>
+            <div id="expenseFixed"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i data-lucide="pie-chart"></i> Feb Category Breakdown</div>
+          <div class="chart-container" style="height:320px"><canvas id="chartExpenseBreakdown"></canvas></div>
+        </div>
+      </section>
+
+      <!-- ═══════ TRANSACTIONS ═══════ -->
+      <section class="page-section" id="page-transactions">
+        <div class="section-header">
+          <div class="section-title"><i data-lucide="list"></i> March Transactions</div>
+          <button class="btn btn-primary btn-sm" onclick="openModal()">
+            <i data-lucide="plus"></i> Add
+          </button>
+        </div>
+        <div class="card">
+          <div id="transactionList"></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i data-lucide="store"></i> Top Merchants — February</div>
+          <div id="merchantList"></div>
+        </div>
+      </section>
+
+      <section class="page-section" id="page-export">
+        <div class="summary-grid" id="exportSummary"></div>
+        <div class="card">
+          <div class="section-header">
+            <div>
+              <div class="section-title"><i data-lucide="download"></i> Export Center</div>
+              <div class="export-subtitle">PDF gives you a readable report. JSON keeps a full backup of the live data and browser edits.</div>
+            </div>
+            <div class="export-actions">
+              <button class="btn btn-primary btn-sm" onclick="exportDataPdf()">
+                <i data-lucide="file-text"></i> Save PDF
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="downloadJsonExport()">
+                <i data-lucide="database"></i> Download JSON
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i data-lucide="scroll-text"></i> Export Preview</div>
+          <div id="exportPreview"></div>
+        </div>
+      </section>
+
+      <!-- ═══════ CREDIT CARDS ═══════ -->
+      <section class="page-section" id="page-cards">
+        <div id="creditCards"></div>
+        <div class="card">
+          <div class="card-title"><i data-lucide="alert-triangle"></i> Pending Debt</div>
+          <div id="debtTracker"></div>
+        </div>
+        <div id="ccPaymentHistory"></div>
+        <div class="card">
+          <div class="card-title"><i data-lucide="bar-chart-3"></i> Monthly Charges — Apple Card</div>
+          <div class="chart-container"><canvas id="chartCardHistory"></canvas></div>
+        </div>
+      </section>
+
+      <!-- ═══════ SUBSCRIPTIONS ═══════ -->
+      <section class="page-section" id="page-subscriptions">
+        <div class="summary-grid">
+          <div class="summary-card green">
+            <div class="summary-card-label"><i data-lucide="check-circle"></i> Active</div>
+            <div class="summary-card-value" id="activeSubTotal">$0</div>
+          </div>
+          <div class="summary-card red">
+            <div class="summary-card-label"><i data-lucide="x-circle"></i> Cancelled</div>
+            <div class="summary-card-value" id="cancelledSubTotal">$0</div>
+            <div class="summary-card-sub">Monthly savings</div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><i data-lucide="check-circle"></i> Active Subscriptions</div>
+            <div id="activeSubs"></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i data-lucide="x-circle"></i> Cancelled</div>
+            <div id="cancelledSubs"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════ ZELLE ═══════ -->
+      <section class="page-section" id="page-zelle">
+        <div class="summary-grid">
+          <div class="summary-card red">
+            <div class="summary-card-label"><i data-lucide="send"></i> Zelle Sent (Feb)</div>
+            <div class="summary-card-value">$1,849.85</div>
+          </div>
+          <div class="summary-card green">
+            <div class="summary-card-label"><i data-lucide="download"></i> Zelle Received (Feb)</div>
+            <div class="summary-card-value">$115.00</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i data-lucide="send"></i> Transfers Sent — February</div>
+          <div id="zelleList"></div>
+        </div>
+      </section>
+
+      <!-- ═══════ MEAL PLAN ═══════ -->
+      <section class="page-section" id="page-mealplan">
+        <div class="summary-grid">
+          <div class="summary-card accent">
+            <div class="summary-card-label"><i data-lucide="utensils-crossed"></i> Plan</div>
+            <div class="summary-card-value">Grad Green</div>
+            <div class="summary-card-sub">$157 / semester</div>
+          </div>
+          <div class="summary-card blue">
+            <div class="summary-card-label"><i data-lucide="ticket"></i> Cost Per Swipe</div>
+            <div class="summary-card-value">$6.60</div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><i data-lucide="ticket"></i> Meal Swipes (20 total)</div>
+            <div class="grid-2" style="gap:12px;margin-bottom:16px">
+              <div class="meal-stat">
+                <div class="meal-stat-value" id="swipesRemaining">20</div>
+                <div class="meal-stat-label">Remaining</div>
+              </div>
+              <div class="meal-stat">
+                <div class="meal-stat-value" id="swipesUsed">0</div>
+                <div class="meal-stat-label">Used</div>
+              </div>
+            </div>
+            <div class="swipe-dots" id="swipeDots"></div>
+            <div style="margin-top:14px;display:flex;gap:8px">
+              <button class="btn btn-primary btn-sm" onclick="useSwipe()">
+                <i data-lucide="minus"></i> Use Swipe
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="undoSwipe()">
+                <i data-lucide="undo"></i> Undo
+              </button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i data-lucide="dollar-sign"></i> Dining Dollars</div>
+            <div class="meal-stat" style="margin-bottom:16px">
+              <div class="meal-stat-value" id="diningDollarsLeft">$25.00</div>
+              <div class="meal-stat-label">Remaining of $25.00</div>
+            </div>
+            <div class="progress-bar" style="height:10px">
+              <div class="progress-fill green" id="diningDollarsBar" style="width:100%"></div>
+            </div>
+            <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
+              <input type="number" class="form-input" id="diningDollarInput" placeholder="Amount spent" step="0.01" min="0" style="width:140px" />
+              <button class="btn btn-primary btn-sm" onclick="useDiningDollars()">Spend</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════ COMPARISON ═══════ -->
+      <section class="page-section" id="page-comparison">
+        <div class="card">
+          <div class="card-title"><i data-lucide="bar-chart-3"></i> Monthly Spending Comparison</div>
+          <div id="comparisonBars"></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i data-lucide="bar-chart-3"></i> Trend Chart</div>
+          <div class="chart-container"><canvas id="chartComparison"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i data-lucide="eye"></i> April Outlook</div>
+          <div class="grid-3" style="text-align:center">
+            <div class="meal-stat">
+              <div class="meal-stat-value" style="color:var(--green)">$2,313</div>
+              <div class="meal-stat-label">Debt freed up</div>
+            </div>
+            <div class="meal-stat">
+              <div class="meal-stat-value" style="color:var(--accent)">$1,500</div>
+              <div class="meal-stat-label">Monthly savings target</div>
+            </div>
+            <div class="meal-stat">
+              <div class="meal-stat-value" style="color:var(--blue)">$5,300</div>
+              <div class="meal-stat-label">Comfortable budget</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════ LIFESTYLE TIERS ═══════ -->
+      <section class="page-section" id="page-tiers">
+        <div class="grid-3" id="tierCards"></div>
+      </section>
+
+    </div><!-- /page-content -->
+  </main>
+</div>
+
+<!-- ───── Add Expense Modal ───── -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title">Add Expense</div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select class="form-select" id="txnCategory">
+        <option value="Groceries">Groceries</option>
+        <option value="Gas/Fuel">Gas/Fuel</option>
+        <option value="Dining Out">Dining Out</option>
+        <option value="Personal Care">Personal Care</option>
+        <option value="Other/Flex">Other/Flex</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Merchant</label>
+      <input class="form-input" id="txnMerchant" placeholder="e.g. Walmart, Wawa..." />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Amount ($)</label>
+      <input class="form-input" id="txnAmount" type="number" step="0.01" min="0" placeholder="0.00" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date</label>
+      <input class="form-input" id="txnDate" type="date" />
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" onclick="addTransaction()">Add Expense</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ───── Toast Container ───── -->
+<div class="toast-container" id="toasts"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
