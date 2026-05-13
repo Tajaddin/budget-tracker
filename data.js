@@ -25,9 +25,9 @@ const APP_DATA = {
     spending: {
       total: 2500,
       byCard: {
-        appleCard: 1800.00,
-        bofaCC: 500.00,
-        bofaDebit: 200.00
+        primaryCard: 1800.00,
+        secondaryCard: 500.00,
+        debitCard: 200.00
       },
       categories: [
         { name: "Dining Out", amount: 400, icon: "utensils" },

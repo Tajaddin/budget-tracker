@@ -1183,7 +1183,7 @@ function renderCreditCards() {
         const balance = getCardBalance(i);
         return `
       <div class="cc-card">
-        <div class="cc-name">${c.issuer || "Bank of America"}</div>
+        <div class="cc-name">${c.issuer || "Bank A"}</div>
         <div class="cc-issuer">${c.name}</div>
         <div class="cc-balance-label">Current Balance</div>
         <div style="display:flex;align-items:center;gap:10px;justify-content:center">
@@ -1504,7 +1504,7 @@ function renderChartCardHistory() {
     data: {
       labels: data.map((d) => d.month),
       datasets: [{
-        label: "Apple Card Charges",
+        label: "Primary Card Charges",
         data: data.map((d) => d.amount),
         borderColor: "#00d4aa",
         backgroundColor: "#00d4aa22",

@@ -369,7 +369,7 @@ async function verifyCardFlows(page) {
   approx(state.ccDebt, 205, "credit card debt after edits");
   approx(state.ccPayments, 75, "cc payments after pay flow");
   assert.equal(state.paymentHistory.length, 1, "payment history after final payment");
-  assert.equal(state.paymentHistory[0].cardName, "Apple Card", "payment history card name");
+  assert.equal(state.paymentHistory[0].cardName, "Primary Card", "payment history card name");
 }
 
 async function verifyStaticPages(page) {
