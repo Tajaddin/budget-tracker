@@ -2,6 +2,8 @@
 
 Personal budget SPA. Vanilla JS, no framework, no backend. Edits persist to LocalStorage. Tracks income, expenses, credit cards, subscriptions, meal plans, and three lifestyle tiers. Playwright functional-check ships in `scripts/`.
 
+Live demo: https://tajaddin.github.io/budget-tracker/
+
 ## Hero numbers
 
 | Metric | Value |
