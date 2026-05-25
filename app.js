@@ -113,7 +113,12 @@ function showToast(message, type = "success") {
   const container = $("#toasts");
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
-  toast.innerHTML = `<i data-lucide="${type === "danger" ? "alert-triangle" : type === "warning" ? "alert-circle" : "check-circle"}" style="width:16px;height:16px;flex-shrink:0"></i> ${message}`;
+  const icon = document.createElement("i");
+  icon.setAttribute("data-lucide", type === "danger" ? "alert-triangle" : type === "warning" ? "alert-circle" : "check-circle");
+  icon.setAttribute("style", "width:16px;height:16px;flex-shrink:0");
+  const text = document.createTextNode(" " + message);
+  toast.appendChild(icon);
+  toast.appendChild(text);
   container.appendChild(toast);
   lucide.createIcons({ attrs: { class: "" } });
   setTimeout(() => {
@@ -1069,8 +1074,8 @@ function renderTransactions() {
         <div class="txn-left">
           <div class="txn-icon"><i data-lucide="${iconMap[t.category] || "circle"}" style="width:16px;height:16px;color:var(--accent)"></i></div>
           <div>
-            <div class="txn-merchant">${t.merchant}</div>
-            <div class="txn-category">${t.category}</div>
+            <div class="txn-merchant">${escapeHtml(t.merchant)}</div>
+            <div class="txn-category">${escapeHtml(t.category)}</div>
           </div>
         </div>
         <div class="txn-right" style="display:flex;align-items:center;gap:10px">
@@ -1333,9 +1338,9 @@ function renderZelle() {
       ([name, data]) => `
       <div class="zelle-row">
         <div class="zelle-left">
-          <div class="zelle-avatar">${name.split(" ").map((w) => w[0]).join("")}</div>
+          <div class="zelle-avatar">${escapeHtml(name.split(" ").map((w) => w[0]).join(""))}</div>
           <div>
-            <div class="zelle-name">${name}</div>
+            <div class="zelle-name">${escapeHtml(name)}</div>
             <div style="font-size:.7rem;color:var(--text-muted)">${data.count} transfer${data.count > 1 ? "s" : ""}</div>
           </div>
         </div>
